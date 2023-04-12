@@ -1,0 +1,1 @@
+print("thankgod,i love you")
