@@ -1,1 +1,1 @@
-# econometrics-using-R
+# Econometrics-using-R
