@@ -1,0 +1,104 @@
+---
+title: "109208063_陳詠鑫"
+author: "Ethan Chen"
+date: "2023-04-01"
+output: html_document
+---
+
+```{r}
+# 1.(a)
+# uniform(-1,1)的平均數為0，變異數為1/3n
+# 故E(Sn)=E(X1)=0,var(Sn)=var(nX1)=n^2var(X1)=n/3
+
+```
+
+
+```{r}
+# 1.(b)
+set.seed(1)
+nreps <- 1000
+
+happy <- function(n){
+  s <- runif(n,-1,1)
+  return(s)
+}
+
+par(mfrow=c(2,2))
+for(i in 1:4){
+  n <- i
+  Sn <- replicate(nreps,sum(happy(n)))
+  hist(Sn, main = paste0("n = ", n), freq = FALSE, ylim = c(0, 0.5), xlim = c(-4, 4))
+  curve(dnorm(x, mean = 0, sd = sqrt(n/3)), add = TRUE, col = "red", lwd = 2)
+}
+
+```
+
+```{r}
+# 1.(c)
+# 從結果中我們很明顯的可以看出來隨著n越大，抽樣分配的結果會與理論分配逐漸接近
+# 這個結果符合CLT的預期，當n=4時，CLT work well in this example
+```
+
+```{r}
+# 2.(a)  
+n <- 1000    # 理論分配
+p <- 0.02
+ux <- n*p
+uvar <- n *(1-p)*p
+
+set.seed(1)  # 抽樣分配
+
+mysample <- function(n,p){
+  a <- sample(c(0,1), n, replace = TRUE, prob = c(1-p, p))
+  b = sum(a)
+  return(b * 200)
+}
+
+nreps <- 1000
+loan_pdf <- replicate(nreps, mysample(n,p))
+m <- mean(loan_pdf)
+s <- sd(loan_pdf)
+hist(loan_pdf, probability = T)
+
+xx <- seq(min(loan_pdf), max(loan_pdf), length = nreps)
+svar = sqrt(uvar) 
+lines(xx, dnorm(xx, mean = ux * 200, sd = svar * 200), col = "red", lwd = 1.5)
+```
+
+```{r}
+# 2.(b)
+# 求損益平衡（預期損失金額＝預期利息收入），令貸款利率為r
+r1 <- 200*0.02/(180*(1-0.02)) #違約收不到利息
+r1  # 貸款年利率為0.02267574
+
+```
+
+```{r}
+# 2.(c)
+# 求損失金額大於利息收入的機率
+# p(180*r(100-m) < 200m)  m = 違約筆數
+# 化簡完得 P( 100r/(r+10/9) < m )
+f <- 100*r1/(r1+10/9)
+c <- 1-pnorm(f ,2,sqrt(2*0.98))  #p(a<m) + p(a>=m) = 1
+c   # 理論機率 = 0.5
+
+set.seed(1)
+nreps = 1000
+
+a <- replicate(nreps,sample(0:1, 100, replace = T, prob = c(0.98, 0.02)))
+b <- mean(a)
+d <- sd(a)
+e <- 1-pnorm(f, 100*b,100*d) #
+e  # 模擬機率為0.5019889
+```
+
+
+```{r}
+# 2.(d)
+h <- qnorm(0.99 ,2,sqrt(2*0.98)) #取不虧損的機率為0.99的值
+r2 = h/(90*(1-h/90))  # 移項求解利率
+r2  #建議利率 = 6.203321%
+```
+
+
+
