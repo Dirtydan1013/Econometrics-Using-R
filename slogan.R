@@ -1,1 +1,1 @@
-print("Work hard,Play hard!sfdscsdcdsc")
+print("Work hard,Play hard!")
